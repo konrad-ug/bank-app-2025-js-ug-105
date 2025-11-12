@@ -5,6 +5,8 @@ class CompanyAccount(Account):
         self.balance = 0.0
         self.company_name = company_name
         self.nip = nip if self.is_NIP_valid(nip) else "Invalid"
+        self.history = []
+        self.express_loan_fee = 5.0
 
     def is_NIP_valid(self, nip):
         if nip and len(nip) == 10:
