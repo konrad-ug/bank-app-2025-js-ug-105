@@ -16,6 +16,21 @@ class PersonalAccount(Account):
         else:
             self.balance = 0.0
 
+
+    def submit_for_loan(self, amount):
+        if self.can_submit_for_loan(amount):
+            self.balance += amount
+            return True
+        return False
+
+    def can_submit_for_loan(self, amount):
+        if len(self.history) >= 3 and (self.history[-1] > 0.0 and self.history[-2] > 0.0 and self.history[-3] > 0.0):
+            return True
+        elif len(self.history) >= 5 and self.history[-1] + self.history[-2] + self.history[-3]  + self.history[-4] + self.history[-5] > amount:
+            return True
+
+        return False
+
     def is_PESEL_valid(self, pesel):
         if pesel and len(pesel) == 11:
             return True
