@@ -2,6 +2,8 @@ from src.personal_account import PersonalAccount
 from src.company_account import CompanyAccount
 from src.account import Account
 
+import pytest
+
 class TestAccount:
     def test_personal_account_creation(self):
         account = PersonalAccount("John", "Doe", "1234567891", "PROM_123")

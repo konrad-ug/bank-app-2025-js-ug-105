@@ -1,6 +1,12 @@
+import pytest
+
 from src.personal_account import PersonalAccount
 
 class TestLoans:
+    @pytest.fixture
+    def account_instance(self):
+        return Account("John", "Doe", "12345678901")
+        
     def test_submit_for_loan_insufficient_transactions(self):
         account = PersonalAccount("John", "Doe", "1234567891")
         account.balance = -30.0
