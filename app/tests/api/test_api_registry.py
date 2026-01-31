@@ -1,38 +1,29 @@
 import pytest
 import requests
 
-BASE_URL = "http://localhost:5000"
+class TestSaveLoad:
+    url = "http://localhost:5000/api/accounts"
+    data = { "first_name": "Jan", "last_name": "Kowalski", "pesel": "79103075873", "email": "email@email.pl"}
 
-def clear_registry():
-    r = requests.get(f"{BASE_URL}/api/accounts")
-    for acc in r.json():
-        requests.delete(f"{BASE_URL}/api/accounts/{acc['pesel']}")
+    @pytest.fixture(autouse=True)
+    def setup_and_teardown(self):
+        # setup
+        requests.post(self.url, json=self.data)
+        yield
+        # teardown
+        requests.delete(f"{self.url}/{self.data['pesel']}")
 
-def test_save_and_load_accounts():
-    clear_registry()
+    def test_save_load_account(self):
+        response = requests.patch(f"{self.url}/save")
+        assert response.status_code == 200
+        
+        delete_response = requests.delete(f"{self.url}/{self.data['pesel']}")
+        assert delete_response.status_code == 200
+        assert requests.get(f"{self.url}/count").json()["count"] == 0
 
-    create_resp = requests.post(
-        f"{BASE_URL}/api/accounts",
-        json={
-            "first_name": "Jan",
-            "last_name": "Kowalski",
-            "pesel": "12345678901",
-            "email": "email@email.pl"
-        }
-    )
-    assert create_resp.status_code == 201
+        load_response = requests.patch(f"{self.url}/load")
+        assert load_response.status_code == 200 
 
-    save_resp = requests.patch(f"{BASE_URL}/api/accounts/save")
-    assert save_resp.status_code == 200
-
-    delete_resp = requests.delete(f"{BASE_URL}/api/accounts/12345678901")
-    assert delete_resp.status_code == 200
-
-    count_resp = requests.get(f"{BASE_URL}/api/accounts/count")
-    assert count_resp.json()["count"] == 0
-
-    load_resp = requests.patch(f"{BASE_URL}/api/accounts/load")
-    assert load_resp.status_code == 200
-
-    get_resp = requests.get(f"{BASE_URL}/api/accounts/12345678901")
-    assert get_resp.status_code == 200
+        get_response = requests.get(f"{self.url}/{self.data['pesel']}")
+        assert get_response.status_code == 200
+        assert get_response.json() == {'first_name': self.data['first_name'], 'last_name': self.data['last_name'], 'pesel': self.data['pesel'], 'email': self.data['email'], 'balance': 0}
