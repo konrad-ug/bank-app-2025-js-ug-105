@@ -17,7 +17,16 @@ jobs:
           docker compose -f app/src/mongo.yml up -d
 
       - name: Wait for Mongo
-        run: sleep 5
+        run: |
+          for i in {1..20}; do
+            if docker exec $(docker ps -q -f name=mongo) mongo --eval "db.stats()" >/dev/null 2>&1; then
+              echo "Mongo is ready!"
+              break
+            fi
+            echo "Waiting for Mongo..."
+            sleep 1
+          done
+
 
 
       - name: Set up Python
