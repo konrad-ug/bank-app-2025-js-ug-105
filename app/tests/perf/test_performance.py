@@ -9,7 +9,7 @@ class TestPerfomance():
     nazwisko = "januszewski"
     pesel = "79103075873"
     email = "email@email.pl"
-    url = "http://localhost:5000/api/accounts"
+    url = "http://localhost:5001/api/accounts"
 
 
     def test_create_and_delete_accounts_performance(self):
