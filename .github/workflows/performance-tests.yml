@@ -34,4 +34,4 @@ jobs:
 
       - name: Execute API performance tests
         run: |
-          python3 -m pytest app/tests/perf
+          PYTHONPATH=app python3 -m pytest app/tests/perf
