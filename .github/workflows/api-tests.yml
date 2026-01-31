@@ -32,7 +32,7 @@ jobs:
 
       - name: Start flask
         run: |
-          export FLASK_APP=app/api.py
+          export FLASK_APP=app/src/api.py
           export FLASK_ENV=development
           export FLASK_RUN_PORT=5000
           export PYTHONPATH=$GITHUB_WORKSPACE
