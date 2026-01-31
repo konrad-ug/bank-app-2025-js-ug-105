@@ -32,4 +32,4 @@ jobs:
 
       - name: Execute API tests
         run: |
-          python3 -m pytest app/tests/api
+          PYTHONPATH=app python3 -m pytest tests/api
