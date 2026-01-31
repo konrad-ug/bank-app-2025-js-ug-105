@@ -12,6 +12,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: start mongo
+        run: |
+          docker compose -f mongo.yml up -d
 
       - name: Set up Python
         uses: actions/setup-python@v5
