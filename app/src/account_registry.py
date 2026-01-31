@@ -1,8 +1,12 @@
 from src.personal_account import PersonalAccount
+from pymongo import MongoClient
 
 class AccountRegistry:
     def __init__(self):
         self.accounts = []
+        self.client = MongoClient('localhost', 27017)
+        self.database = self.client['bank_database']
+        self.collection = self.database['accounts']
 
     def add_account(self, account: PersonalAccount):
         for acc in self.accounts:
@@ -38,3 +42,16 @@ class AccountRegistry:
                 return True
         
         return False
+    
+    def load(self):
+        self.accounts= []
+        for account in self.collection.find({}):
+            new_account = PersonalAccount(account["first_name"], account["last_name"], account["pesel"], account["email"])
+            new_account.history = account['history']
+            new_account.balance = account['saldo']
+            self.accounts.append(new_account)
+
+    def save(self):
+        self.collection.delete_many({})
+        for account in self.accounts:
+            self.collection.insert_one({ "first_name": account.first_name, "last_name": account.last_name, "pesel": account.pesel, "email": account.email, "balance": account.balance, "history": account.history })
