@@ -83,3 +83,13 @@ def transfer(pesel):
         return jsonify({"message": "Zlecenie przyjęte do realizacji"}), 201
     
     return jsonify({"message": "Wystąpił błąd przy zlecaniu przelewu"}), 422
+
+@app.route("/api/accounts/save", methods=['PATCH'])
+def save_to_db():
+   registry.save()
+   return jsonify({"message": "accounts were saved to db"}), 200
+
+@app.route("/api/accounts/load", methods=['PATCH'])
+def load_from_db():
+   registry.load()
+   return jsonify({"message": "accounts loaded from db"}), 200

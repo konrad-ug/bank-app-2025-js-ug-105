@@ -56,4 +56,54 @@ class TestAccountRegistry:
         registry.add_account(sample_account)
         registry.delete_account("1234567890")
         assert registry.find_account_by_pesel("12345678901") == sample_account
+
+    def test_save_clears_and_inserts_accounts(self, mocker):
+        registry = AccountRegistry()
+        mock_collection = mocker.Mock()
+        registry.collection = mock_collection
+
+        acc1 = PersonalAccount("Jan", "Kowalski", "12345678901", "a@a.pl")
+        acc1.balance = 100
+        acc1.history = [100]
+
+        acc2 = PersonalAccount("Anna", "Nowak", "45678901234", "b@b.pl")
+        acc2.balance = 200
+        acc2.history = [200]
+
+        registry.accounts = [acc1, acc2]
+
+        registry.save()
+
+        mock_collection.delete_many.assert_called_once_with({})
+        assert mock_collection.insert_one.call_count == 2
+
+    def test_load_replaces_accounts_from_db(self, mocker):
+        registry = AccountRegistry()
+
+        mock_collection = mocker.Mock()
+        registry.collection = mock_collection
+
+        mock_collection.find.return_value = [
+            {
+                "first_name": "Jan",
+                "last_name": "Kowalski",
+                "pesel": "12345678901",
+                "email": "a@a.pl",
+                "saldo": 100,
+                "history": [100]
+            }
+        ]
+
+        registry.accounts = ["OLD_ACCOUNT"]
+
+        registry.load()
+
+        assert len(registry.accounts) == 1
+        acc = registry.accounts[0]
+
+        assert acc.first_name == "Jan"
+        assert acc.last_name == "Kowalski"
+        assert acc.pesel == "12345678901"
+        assert acc.balance == 100
+        assert acc.history == [100]
         
